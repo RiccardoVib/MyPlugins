@@ -8,12 +8,17 @@
 
 #include "DelayLine.hpp"
 #include <iostream>
+#include <math.h>
 
 void DelayLine::setDelayL(double samples){
     
     rptrLeft = wptrLeft - (long)samples;
     //while (wptrLeft - bufferLeft >= len) { wptrLeft -= len; }
     while (rptrLeft < bufferLeft) { rptrLeft += len; }
+    crossfadeNeededL = true;
+    memcpy(bufferLeft_copy, bufferLeft, len*sizeof(double));
+    rptrLeft_copy = rptrLeft;
+    t_L = -1;
     
     fracDelaySamplesLeft = samples - (long)samples;
 }
@@ -23,6 +28,10 @@ void DelayLine::setDelayR(double samples){
     rptrRight = wptrRight - (long)samples;
     //while (wptrRight - bufferRight >= len) { wptrRight -= len; }
     while (rptrRight < bufferRight) { rptrRight += len; }
+    crossfadeNeededR = true;
+    memcpy(bufferRight_copy, bufferRight, len*sizeof(double));
+    rptrRight_copy = rptrRight;
+    t_R = -1;
     
     fracDelaySamplesRight = samples - (long)samples;
 }
@@ -76,6 +85,13 @@ double DelayLine::delayLineL(double x)
     
     if (rptrLeft - bufferLeft >= len) { rptrLeft -= len; }
     if (wptrLeft - bufferLeft >= len) { wptrLeft -= len; }
+    
+    rptrLeft_copy = rptrLeft;
+    
+    if(crossfadeNeededL){
+        y += *rptrLeft_copy++ * sqrt(0.5f * (1.0f + t_L));
+        while (t_L < 1){ t_L += 0.008;}
+    }
     
     return y;
 }

@@ -16,6 +16,11 @@ const int len_ref = (int)(46/0.345)*44.1;
 static double bufferLeft[len];
 static double bufferRight[len];
 
+static double bufferLeft_copy[len];
+static double bufferRight_copy[len];
+static double *rptrLeft_copy = bufferLeft_copy;
+static double *rptrRight_copy = bufferRight_copy;
+
 static double bufferLeft_Ref[len_ref];
 static double bufferRight_Ref[len_ref];
 
@@ -42,7 +47,11 @@ public:
     fracDelaySamplesLeft(0.0),
     fracDelaySamplesRight(0.0),
     fracDelaySamplesLeft_Ref(0.0),
-    fracDelaySamplesRight_Ref(0.0){};
+    fracDelaySamplesRight_Ref(0.0),
+    crossfadeNeededL(false),
+    crossfadeNeededR(false),
+    t_L(0),
+    t_R(0){};
     ~DelayLine(){};
     
     
@@ -62,6 +71,8 @@ public:
     
 private:
 
+    int t_L;
+    int t_R;
     double y_1_L;
     double y_1_R;
     double y_1_L_ref;
@@ -71,5 +82,7 @@ private:
 
     double fracDelaySamplesLeft_Ref;
     double fracDelaySamplesRight_Ref;
+    bool crossfadeNeededL;
+    bool crossfadeNeededR;
 };
 #endif /* DelayLine_hpp */
